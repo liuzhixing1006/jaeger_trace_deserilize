@@ -57,12 +57,18 @@ public class Job {
             SingleOutputStreamOperator<TargetBean> nimoEvent = TransferHolder.processTaf(nimoMappedStream, CorpType.NIMO, BgType.NIMO_TAF, 32).name("nimo-taf");
 
             //将所有流混合成一条
-            DataStream<TargetBean> unionStream = webEvent.union(huyaEvent).union(yomeEvent).union(nimoEvent).union(webPrefectureEvent);
+            DataStream<TargetBean> unionStream = webEvent.union(yomeEvent).union(nimoEvent).union(webPrefectureEvent);
 
-            unionStream.map(value -> JSON.toJSONString(value))
-                    .setParallelism(50)
+            huyaEvent.map(value -> JSON.toJSONString(value)).setParallelism(50)
+                    .rebalance()
                     .addSink(new KafkaSink(MyConstant.TARGET_KAFKA_BOOT_STRAP, MyConstant.TARGET_KAFKA_TOPIC, MyConstant.TARGET_KEY))
                     .setParallelism(50)
+                    .name("server_source_bean_to_kafka");
+
+            unionStream.map(value -> JSON.toJSONString(value))
+                    .setParallelism(32)
+                    .addSink(new KafkaSink(MyConstant.TARGET_KAFKA_BOOT_STRAP, MyConstant.TARGET_KAFKA_TOPIC, MyConstant.TARGET_KEY))
+                    .setParallelism(32)
                     .name("server_source_bean_to_kafka");
 
             env.execute("huya_service_chain");
