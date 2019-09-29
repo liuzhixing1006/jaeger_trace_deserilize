@@ -21,7 +21,8 @@ import java.util.Properties;
  */
 public interface MyConstant {
     int AUTO_WATERMARK_INTERVAL = 6000;
-    int DEFAULT_PARALLELISM = 8;
+    int MAX_PARALLELISM = 16;
+    int MIN_PARALLELISM = 4;
     boolean IS_LOCAL = false;
     int MAX_LATENESS = 30;
 

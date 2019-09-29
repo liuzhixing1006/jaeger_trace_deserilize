@@ -28,7 +28,7 @@ public class TransferHolder {
     public static SingleOutputStreamOperator<TargetBean> processWeb(SingleOutputStreamOperator<WebSourceBean> mappedStream) {
         SingleOutputStreamOperator<TargetBean> targetBeanSingleOutputStreamOperator = mappedStream.returns(WebSourceBean.class)
                 .flatMap(new WebFlatMapFunction())
-                .setParallelism(MyConstant.DEFAULT_PARALLELISM);;
+                .setParallelism(4);
 
         return targetBeanSingleOutputStreamOperator;
     }
@@ -37,6 +37,7 @@ public class TransferHolder {
     public static SingleOutputStreamOperator<TargetBean> processWebPrefecture(SingleOutputStreamOperator<String> mappedStream) {
         SingleOutputStreamOperator<TargetBean> targetBeanSingleOutputStreamOperator = mappedStream.returns(String.class)
                 .flatMap(new WebPrefectureMapFunction())
+                .setParallelism(32)
                 .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<WebPrefectureSourceBean>(Time.seconds(MyConstant.MAX_LATENESS)) {
                     @Override
                     public long extractTimestamp(WebPrefectureSourceBean sourceBean) {
@@ -46,15 +47,15 @@ public class TransferHolder {
                 .keyBy(new WebPrefectureKeyByFunction())
                 .window(TumblingEventTimeWindows.of(Time.minutes(1)))
                 .apply(new WebPrefectureWindowFunction())
-                .setParallelism(MyConstant.DEFAULT_PARALLELISM);
+                .setParallelism(32);
 
         return targetBeanSingleOutputStreamOperator;
     }
 
     //taf处理路由类
-    public static SingleOutputStreamOperator<TargetBean> processTaf(SingleOutputStreamOperator<TafSourceEvent> mappedStream, CorpType corpType, BgType bgType) {
+    public static SingleOutputStreamOperator<TargetBean> processTaf(SingleOutputStreamOperator<TafSourceEvent> mappedStream, CorpType corpType, BgType bgType, int parallelism) {
         SingleOutputStreamOperator<TargetBean> targetBeanSingleOutputStreamOperator = mappedStream.flatMap(new TafFlatMapFunction(corpType, bgType))
-                .setParallelism(MyConstant.DEFAULT_PARALLELISM);
+                .setParallelism(parallelism);
 
         return targetBeanSingleOutputStreamOperator;
     }

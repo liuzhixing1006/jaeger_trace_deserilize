@@ -24,40 +24,53 @@ public class SourceStreamHolder {
     //web主站源数据转换
     public static SingleOutputStreamOperator<WebSourceBean> getWebSourceEventStream(StreamExecutionEnvironment env, FlinkKafkaConsumerBase<String> kafkaConsumer){
         SingleOutputStreamOperator filter = env.addSource(kafkaConsumer)
-                .setParallelism(MyConstant.DEFAULT_PARALLELISM)
+                .setParallelism(4)
                 .map(new MapToWebSourceBeanFunction())
-                .filter(value -> value != null);
+                .setParallelism(4)
+                .filter(value -> value != null)
+                .setParallelism(4);
         return filter;
     }
 
     //web专区源数据转换
     public static SingleOutputStreamOperator<String> getWebPrefectureStream(StreamExecutionEnvironment env, FlinkKafkaConsumerBase<LogSvrRecord> kafkaConsumer) {
         SingleOutputStreamOperator<String> filter = env.addSource(kafkaConsumer)
-                .setParallelism(MyConstant.DEFAULT_PARALLELISM)
+                .setParallelism(32)
                 .filter(value -> value != null)
-                .map(value -> value.getData());
+                .map(value -> value.getData())
+                .setParallelism(32);
 
         return filter;
     }
 
     //taf源数据转换
-    public static SingleOutputStreamOperator<TafSourceEvent> getTafSourceEventStream(StreamExecutionEnvironment env, FlinkKafkaConsumerBase<String> kafkaConsumer){
+    public static SingleOutputStreamOperator<TafSourceEvent> getTafSourceEventStream(StreamExecutionEnvironment env, FlinkKafkaConsumerBase<String> kafkaConsumer, int parallelism){
         SingleOutputStreamOperator filter = env.addSource(kafkaConsumer)
-                .setParallelism(MyConstant.DEFAULT_PARALLELISM)
+                .setParallelism(parallelism)
                 .map(new MapToTafSourceBeanFunction())
-                .filter(value -> value != null);
+                .setParallelism(parallelism)
+                .filter(value -> value != null)
+                .setParallelism(parallelism);
+
         return filter;
     }
 
     //nimo-taf源数据转换
     public static SingleOutputStreamOperator<TafSourceEvent> getNimoSourceEventStream(StreamExecutionEnvironment env, FlinkKafkaConsumerBase<LogSreBean> kafkaConsumer) {
-        SingleOutputStreamOperator<LogSreBean> sourceStream = env.addSource(kafkaConsumer).uid("Src_stream").name("transform_src").filter(value -> value != null);
+        SingleOutputStreamOperator<LogSreBean> sourceStream = env.addSource(kafkaConsumer)
+                .setParallelism(32)
+                .uid("Src_stream")
+                .name("transform_src")
+                .filter(value -> value != null)
+                .setParallelism(32);
+
         SplitStream<LogSreBean> splitDatas = sourceStream.split(new NimoTafKeySelector());
 
         SingleOutputStreamOperator filter = splitDatas.select(MyConstant.NIMO_SERVICE_KEY)
                 .map(new MapToNimoSourceBeanFunciton())
+                .setParallelism(32)
                 .map(new MapToTafSourceBeanFunction())
-                .setParallelism(MyConstant.DEFAULT_PARALLELISM)
+                .setParallelism(32)
                 .filter(value -> value != null);
 
         return filter;
