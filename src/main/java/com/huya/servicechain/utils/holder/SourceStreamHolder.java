@@ -37,6 +37,7 @@ public class SourceStreamHolder {
         SingleOutputStreamOperator<String> filter = env.addSource(kafkaConsumer)
                 .setParallelism(32)
                 .filter(value -> value != null)
+                .setParallelism(32)
                 .map(value -> value.getData())
                 .setParallelism(32);
 
@@ -71,7 +72,8 @@ public class SourceStreamHolder {
                 .setParallelism(32)
                 .map(new MapToTafSourceBeanFunction())
                 .setParallelism(32)
-                .filter(value -> value != null);
+                .filter(value -> value != null)
+                .setParallelism(32);
 
         return filter;
     }

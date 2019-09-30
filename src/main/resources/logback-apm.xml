@@ -16,7 +16,7 @@
 			</encoder>
 		</appender>
 		
-		<logger name="com.huya.servicechain" level="info"/>
+		<logger name="com.huya.servicechain" level="error"/>
 
 		<root level="info">
 			<appender-ref ref="CONSOLE" />
@@ -31,7 +31,7 @@
 			</encoder>
 		</appender>
 
-		<logger name="com.huya.servicechain" level="info"/>
+		<logger name="com.huya.servicechain" level="error"/>
 
 		<root level="info">
 			<appender-ref ref="CONSOLE" />

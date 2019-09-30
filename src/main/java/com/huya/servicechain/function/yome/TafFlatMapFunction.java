@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @ClassName YomeFlatMapFunction
- * @Description Yome数据源转换函数
+ * @ClassName TafFlatMapFunction
+ * @Description TAF数据源转换函数
  * @Author liuzhixing
  * @Date 2019-09-10 14:24
  **/

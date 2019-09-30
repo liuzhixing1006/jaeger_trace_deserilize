@@ -2,7 +2,6 @@ package com.huya.servicechain.function.yome;
 
 import com.alibaba.fastjson.JSON;
 import com.huya.servicechain.domain.source.TafSourceEvent;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.functions.MapFunction;
 
