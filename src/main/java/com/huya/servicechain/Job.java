@@ -1,6 +1,5 @@
 package com.huya.servicechain;
 
-import com.alibaba.fastjson.JSON;
 import com.huya.servicechain.domain.LogSreBean;
 import com.huya.servicechain.domain.source.TafSourceEvent;
 import com.huya.servicechain.domain.source.WebSourceBean;
@@ -33,8 +32,8 @@ public class Job {
             FlinkKafkaConsumer011 webKafkaConsumer = MyConstant.getKafkaConsumer(MyConstant.WEB_SERVICE_CHAIN_BOOT_STRAP, MyConstant.WEB_SERVICE_CHAIN_TOPIC, MyConstant.WEB_SERVICE_CHAIN_GROUP);
             FlinkKafkaConsumer011 webPrefectureConsumer = MyConstant.getKafkaConsumerBySasl(MyConstant.WEB_PREFECTURE_BOOT_STRAP, MyConstant.WEB_PREFECTURE_TOPIC, MyConstant.WEB_PREFECTURE_GROUP, MyConstant.WEB_PREFECTURE_CONFIG);
             FlinkKafkaConsumer011 yomeKafkaConsumer = MyConstant.getKafkaConsumer(MyConstant.YOME_SERVICE_CHAIN_BOOT_STRAP, MyConstant.YOME_SERVICE_CHAIN_TOPIC, MyConstant.YOME_SERVICE_CHAIN_GROUP);
-            FlinkKafkaConsumer011 huyaKafkaConsumer = MyConstant.getKafkaConsumer(MyConstant.HUYA_SERVICE_CHAIN_BOOT_STRAP, MyConstant.HUYA_SERVICE_CHAIN_TOPIC, MyConstant.HUYA_SERVICE_CHAIN_GROUP);
             FlinkKafkaConsumer011<LogSreBean> nimoKafkaConsumer = MyConstant.getKafkaConsumerByKeyMode(MyConstant.NIMO_SERVICE_CHAIN_BOOT_STRAP, MyConstant.NIMO_SERVICE_CHAIN_TOPIC, MyConstant.NIMO_SERVICE_CHAIN_GROUP);
+            //FlinkKafkaConsumer011 huyaKafkaConsumer = MyConstant.getKafkaConsumer(MyConstant.HUYA_SERVICE_CHAIN_BOOT_STRAP, MyConstant.HUYA_SERVICE_CHAIN_TOPIC, MyConstant.HUYA_SERVICE_CHAIN_GROUP);
 
             //web主站相关日志
             SingleOutputStreamOperator<WebSourceBean> webMappedStream = SourceStreamHolder.getWebSourceEventStream(env, webKafkaConsumer);
@@ -45,8 +44,8 @@ public class Job {
             SingleOutputStreamOperator<TargetBean> webPrefectureEvent = TransferHolder.processWebPrefecture(webPrefectureStream).name("web专区");
 
             //huya-taf相关日志
-            SingleOutputStreamOperator<TafSourceEvent> huyaMappedStream = SourceStreamHolder.getTafSourceEventStream(env, huyaKafkaConsumer, 32);
-            SingleOutputStreamOperator<TargetBean> huyaEvent = TransferHolder.processTaf(huyaMappedStream, CorpType.HUYA, BgType.HUYA_TAF, 32).name("huya-taf");
+            /*SingleOutputStreamOperator<TafSourceEvent> huyaMappedStream = SourceStreamHolder.getTafSourceEventStream(env, huyaKafkaConsumer, 32);
+            SingleOutputStreamOperator<TargetBean> huyaEvent = TransferHolder.processTaf(huyaMappedStream, CorpType.HUYA, BgType.HUYA_TAF, 32).name("huya-taf");*/
 
             //yome-taf相关日志
             SingleOutputStreamOperator<TafSourceEvent> yomeMappedStream = SourceStreamHolder.getTafSourceEventStream(env, yomeKafkaConsumer, 4);
@@ -57,7 +56,7 @@ public class Job {
             SingleOutputStreamOperator<TargetBean> nimoEvent = TransferHolder.processTaf(nimoMappedStream, CorpType.NIMO, BgType.NIMO_TAF, 4).name("nimo-taf");
 
             //将所有流混合成一条
-            DataStream<TargetBean> unionStream = webEvent.union(huyaEvent).union(yomeEvent).union(nimoEvent).union(webPrefectureEvent);
+            DataStream<TargetBean> unionStream = webEvent.union(yomeEvent).union(nimoEvent).union(webPrefectureEvent);
 
             unionStream.map(new TargetEventToProtolBuffer())
                     .setParallelism(32)
