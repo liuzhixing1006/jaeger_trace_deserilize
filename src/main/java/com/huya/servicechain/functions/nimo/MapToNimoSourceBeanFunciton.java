@@ -1,4 +1,4 @@
-package com.huya.servicechain.function.nimo;
+package com.huya.servicechain.functions.nimo;
 
 import com.huya.servicechain.domain.LogSreBean;
 import lombok.extern.slf4j.Slf4j;

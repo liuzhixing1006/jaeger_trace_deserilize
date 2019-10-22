@@ -1,4 +1,4 @@
-package com.huya.servicechain.utils;
+package com.huya.servicechain.utils.schema;
 
 import com.huya.servicechain.domain.LogSreBean;
 import lombok.extern.slf4j.Slf4j;
@@ -6,7 +6,10 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.util.serialization.KeyedDeserializationSchema;
 
 /**
- * created by stone  2019/2/21 19:12
+ * @program: KafkaSourceParseSchema
+ * @description: kafka数据源解析
+ * @author: Stone
+ * @create: 2019-09-24 15:31
  */
 @Slf4j
 public class KafkaSourceParseSchema implements KeyedDeserializationSchema<LogSreBean> {

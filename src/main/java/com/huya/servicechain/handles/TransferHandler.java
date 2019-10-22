@@ -1,15 +1,15 @@
-package com.huya.servicechain.utils.holder;
+package com.huya.servicechain.handles;
 
 import com.huya.servicechain.domain.source.TafSourceEvent;
 import com.huya.servicechain.domain.source.WebPrefectureSourceBean;
 import com.huya.servicechain.domain.source.WebSourceBean;
 import com.huya.servicechain.domain.target.TargetBean;
-import com.huya.servicechain.function.web.WebFlatMapFunction;
-import com.huya.servicechain.function.webprefecture.WebPrefectureKeyByFunction;
-import com.huya.servicechain.function.webprefecture.WebPrefectureMapFunction;
-import com.huya.servicechain.function.webprefecture.WebPrefectureWindowFunction;
-import com.huya.servicechain.function.yome.TafFlatMapFunction;
-import com.huya.servicechain.utils.MyConstant;
+import com.huya.servicechain.functions.web.WebFlatMapFunction;
+import com.huya.servicechain.functions.webprefecture.WebPrefectureKeyByFunction;
+import com.huya.servicechain.functions.webprefecture.WebPrefectureMapFunction;
+import com.huya.servicechain.functions.webprefecture.WebPrefectureWindowFunction;
+import com.huya.servicechain.functions.TafFlatMapFunction;
+import com.huya.servicechain.utils.Constant;
 import com.huya.servicechain.utils.enums.BgType;
 import com.huya.servicechain.utils.enums.CorpType;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -18,12 +18,12 @@ import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindo
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
- * @ClassName TransferHolder
- * @Description 路由流相关信息
+ * @ClassName TransferHandler
+ * @Description 将所有相关的数据转换成统一格式的TargetBean
  * @Author liuzhixing
  * @Date 2019-08-28 16:41
  **/
-public class TransferHolder {
+public class TransferHandler {
     //web主站处理路由类
     public static SingleOutputStreamOperator<TargetBean> processWeb(SingleOutputStreamOperator<WebSourceBean> mappedStream) {
         SingleOutputStreamOperator<TargetBean> targetBeanSingleOutputStreamOperator = mappedStream.returns(WebSourceBean.class)
@@ -38,7 +38,7 @@ public class TransferHolder {
         SingleOutputStreamOperator<TargetBean> targetBeanSingleOutputStreamOperator = mappedStream.returns(String.class)
                 .flatMap(new WebPrefectureMapFunction())
                 .setParallelism(32)
-                .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<WebPrefectureSourceBean>(Time.seconds(MyConstant.MAX_LATENESS)) {
+                .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<WebPrefectureSourceBean>(Time.seconds(Constant.MAX_LATENESS)) {
                     @Override
                     public long extractTimestamp(WebPrefectureSourceBean sourceBean) {
                         return sourceBean.getIts();

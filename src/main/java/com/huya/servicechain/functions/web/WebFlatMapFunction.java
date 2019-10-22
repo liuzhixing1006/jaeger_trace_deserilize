@@ -1,8 +1,8 @@
-package com.huya.servicechain.function.web;
+package com.huya.servicechain.functions.web;
 
-import com.alibaba.fastjson.JSON;
 import com.huya.servicechain.domain.source.WebSourceBean;
 import com.huya.servicechain.domain.target.TargetBean;
+import com.huya.servicechain.utils.BucketUtils;
 import com.huya.servicechain.utils.enums.BgType;
 import com.huya.servicechain.utils.enums.CorpType;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * @ClassName WebFlatMapFunction
  * @Description Web主站流转换函数
- * @Author jasper
+ * @Author liuzhixing
  * @Date 2019-08-28 17:36
  **/
 public class WebFlatMapFunction extends RichFlatMapFunction<WebSourceBean, TargetBean> {
@@ -26,7 +26,7 @@ public class WebFlatMapFunction extends RichFlatMapFunction<WebSourceBean, Targe
 
         targetBean.setCorp(CorpType.HUYA.getType());
         targetBean.setBg(BgType.HUYA_WEB_SERVICE.getType());
-        targetBean.setIts(sourceBean.getIts() * 1000);
+        targetBean.setIts(sourceBean.getIts());
         targetBean.setSource(sourceBean.getConsumername());
         targetBean.setTarget(sourceBean.getProvidername());
         targetBean.setSourceIp(sourceBean.getConsumerip());
@@ -36,10 +36,32 @@ public class WebFlatMapFunction extends RichFlatMapFunction<WebSourceBean, Targe
         targetBean.setCount((long) sourceBean.getSum());
         targetBean.setSuccessCount((long) sourceBean.getInvoke_suc());
 
-        Map<Integer, Long> periods = parsePeriods(sourceBean.getPeriods());
-        targetBean.setPeriods(JSON.toJSONString(periods));
+        Map<Integer, Long> bucket = mergeBucket(sourceBean.getPeriods());
+        targetBean.setSeq_5(bucket.get(5));
+        targetBean.setSeq_10(bucket.get(10));
+        targetBean.setSeq_50(bucket.get(50));
+        targetBean.setSeq_100(bucket.get(100));
+        targetBean.setSeq_200(bucket.get(200));
+        targetBean.setSeq_500(bucket.get(500));
+        targetBean.setSeq_1000(bucket.get(1000));
+        targetBean.setSeq_2000(bucket.get(2000));
+        targetBean.setSeq_3000(bucket.get(3000));
 
         collector.collect(targetBean);
+    }
+
+    private Map<Integer, Long> mergeBucket(String periods) {
+        Map<Integer, Long> bucket = BucketUtils.initialBucket();
+        Map<Integer, Long> data = parsePeriods(periods);
+
+        for (Map.Entry<Integer, Long> ite : data.entrySet()) {
+            Integer timeRange = ite.getKey();
+            Long seqTime = ite.getValue();
+
+            BucketUtils.addDurationToBucket(bucket, timeRange, seqTime);
+        }
+
+        return bucket;
     }
 
     private Map<Integer, Long> parsePeriods(String periods) {
@@ -55,4 +77,5 @@ public class WebFlatMapFunction extends RichFlatMapFunction<WebSourceBean, Targe
 
         return result;
     }
+
 }

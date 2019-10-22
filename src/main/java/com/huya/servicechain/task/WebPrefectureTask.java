@@ -1,22 +1,20 @@
-package com.huya.servicechain.utils.task;
+package com.huya.servicechain.task;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.huya.servicechain.utils.task.model.WebInterfaceBean;
+import com.huya.servicechain.task.model.WebInterfaceBean;
 import lombok.extern.log4j.Log4j2;
 import org.unidal.helper.Files;
 import org.unidal.helper.Urls;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * @ClassName WebPrefectureTask
- * @Description web专区域名和服务数据映射关系维护
+ * @Description web专区域名和服务数据映射关系维护定时服务
  * @Author liuzhixing
  * @Date 2019-09-26 19:35
  **/

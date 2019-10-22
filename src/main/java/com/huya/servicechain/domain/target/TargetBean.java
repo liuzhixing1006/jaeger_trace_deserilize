@@ -27,5 +27,13 @@ public class TargetBean {
     long count;
     long successCount;
     long totalTime;
-    String periods;
+    long seq_5;
+    long seq_10;
+    long seq_50;
+    long seq_100;
+    long seq_200;
+    long seq_500;
+    long seq_1000;
+    long seq_2000;
+    long seq_3000;
 }

@@ -1,8 +1,7 @@
-package com.huya.servicechain.function.webprefecture;
+package com.huya.servicechain.functions.webprefecture;
 
 import com.huya.servicechain.domain.source.WebPrefectureSourceBean;
-import com.huya.servicechain.utils.task.WebPrefectureTask;
-import com.huya.servicechain.utils.task.model.WebInterfaceBean;
+import com.huya.servicechain.task.*;
 import lombok.extern.log4j.Log4j2;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.util.Collector;
@@ -57,7 +56,7 @@ public class WebPrefectureMapFunction implements FlatMapFunction<String, WebPref
 
         try {
             Date date = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss z", Locale.US).parse(time);
-            result = date.getTime();
+            result = date.getTime() / 1000L;
         } catch (Exception e) {
             log.error(e);
         }

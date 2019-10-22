@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 /**
  * @ClassName WebSourceBean
  * @Description WEB主站原始日志
- * @Author jasper
+ * @Author liuzhixing
  * @Date 2019-09-02 12:07
  **/
 @Data

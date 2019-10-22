@@ -1,7 +1,7 @@
-package com.huya.servicechain.function;
+package com.huya.servicechain.functions;
 
 import com.huya.servicechain.domain.target.TargetBean;
-import com.huya.servicechain.domain.target.TargetBuffer;
+import com.huya.servicechain.domain.target.protobuf.TargetProtoBuf;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.functions.MapFunction;
 
@@ -16,7 +16,7 @@ public class TargetEventToProtolBuffer implements MapFunction<TargetBean, byte[]
     @Override
     public byte[] map(TargetBean targetBean) {
         try {
-            TargetBuffer.VersionMessage.Builder builder = TargetBuffer.VersionMessage.newBuilder();
+            TargetProtoBuf.VersionMessage.Builder builder = TargetProtoBuf.VersionMessage.newBuilder();
 
             builder.setIts(targetBean.getIts());
             builder.setCorp(targetBean.getCorp());
@@ -29,9 +29,17 @@ public class TargetEventToProtolBuffer implements MapFunction<TargetBean, byte[]
             builder.setCount(targetBean.getCount());
             builder.setSuccessCount(targetBean.getSuccessCount());
             builder.setTotalTime(targetBean.getTotalTime());
-            builder.setPeriods(targetBean.getPeriods());
+            builder.setSeq5(targetBean.getSeq_5());
+            builder.setSeq10(targetBean.getSeq_10());
+            builder.setSeq50(targetBean.getSeq_50());
+            builder.setSeq100(targetBean.getSeq_100());
+            builder.setSeq200(targetBean.getSeq_200());
+            builder.setSeq500(targetBean.getSeq_500());
+            builder.setSeq1000(targetBean.getSeq_1000());
+            builder.setSeq2000(targetBean.getSeq_2000());
+            builder.setSeq3000(targetBean.getSeq_3000());
 
-            TargetBuffer.VersionMessage build = builder.build();
+            TargetProtoBuf.VersionMessage build = builder.build();
             return build.toByteArray();
         } catch (Exception e) {
             log.error("序列化失败！", e);

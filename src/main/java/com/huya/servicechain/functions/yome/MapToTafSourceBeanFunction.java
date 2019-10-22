@@ -1,4 +1,4 @@
-package com.huya.servicechain.function.yome;
+package com.huya.servicechain.functions.yome;
 
 import com.alibaba.fastjson.JSON;
 import com.huya.servicechain.domain.source.TafSourceEvent;

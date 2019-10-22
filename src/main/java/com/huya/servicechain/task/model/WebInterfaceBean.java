@@ -1,4 +1,4 @@
-package com.huya.servicechain.utils.task.model;
+package com.huya.servicechain.task.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

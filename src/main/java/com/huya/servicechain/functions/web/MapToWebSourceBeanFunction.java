@@ -1,8 +1,7 @@
-package com.huya.servicechain.function.web;
+package com.huya.servicechain.functions.web;
 
 import com.alibaba.fastjson.JSON;
 import com.huya.servicechain.domain.source.WebSourceBean;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.functions.MapFunction;
 

@@ -1,6 +1,8 @@
 package com.huya.servicechain.utils;
 
 import com.huya.beelogsvr.model.LogSvrRecord;
+import com.huya.servicechain.utils.schema.KafkaSourceParseSchema;
+import com.huya.servicechain.utils.schema.SlsaKafkaSourceParseSchema;
 import org.apache.flink.api.common.ExecutionMode;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
@@ -16,17 +18,15 @@ import org.apache.kafka.common.serialization.ByteArraySerializer;
 import java.util.Properties;
 
 /**
- * @program: topology_overseas_analysis
+ * @program: Constant
  * @description: 公共基础类
  * @author: liuzhixing
  * @create: 2019-08-28 14:50
  */
-public interface MyConstant {
+public interface Constant {
     int AUTO_WATERMARK_INTERVAL = 6000;
-    int MAX_PARALLELISM = 16;
-    int MIN_PARALLELISM = 4;
     boolean IS_LOCAL = false;
-    int MAX_LATENESS = 30;
+    int MAX_LATENESS = 10;
 
     /**
      * 国内huya-taf数据源kafka
@@ -101,7 +101,7 @@ public interface MyConstant {
     /**
      * 得到认证的信息
      *
-     * @param bootstrap kafka
+     * @param bootstrap schema
      * @param topic     topic
      * @param group     消费组
      * @param config    认证信息
@@ -114,13 +114,13 @@ public interface MyConstant {
         props.put("key.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
         props.put("sasl.jaas.config", config);
-        return new FlinkKafkaConsumer011<LogSvrRecord>(topic, new SlsaKafkaSourceSchema(), props);
+        return new FlinkKafkaConsumer011<LogSvrRecord>(topic, new SlsaKafkaSourceParseSchema(), props);
     }
 
     /**
      * 返回目标properties
      *
-     * @param bootstrap kafka
+     * @param bootstrap schema
      * @param topic     topic
      * @param group     消费组
      * @return 返回目标properties
@@ -146,14 +146,14 @@ public interface MyConstant {
      */
     static StreamExecutionEnvironment getEnv() {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        if (MyConstant.IS_LOCAL) {
+        if (Constant.IS_LOCAL) {
             env = new LocalStreamEnvironment();
         }
         env.getConfig().setRestartStrategy(RestartStrategies.fixedDelayRestart(Integer.MAX_VALUE, 5000));
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         env.setBufferTimeout(5000);
         env.getConfig().setExecutionMode(ExecutionMode.PIPELINED_FORCED);
-        env.getConfig().setAutoWatermarkInterval(MyConstant.AUTO_WATERMARK_INTERVAL);
+        env.getConfig().setAutoWatermarkInterval(Constant.AUTO_WATERMARK_INTERVAL);
 
         env.enableCheckpointing(60000);
         env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.AT_LEAST_ONCE);
@@ -173,7 +173,7 @@ public interface MyConstant {
      */
     static Properties getTargetKafkaProps() {
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, MyConstant.TARGET_KAFKA_BOOT_STRAP);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, Constant.TARGET_KAFKA_BOOT_STRAP);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
         props.put("acks", "1");

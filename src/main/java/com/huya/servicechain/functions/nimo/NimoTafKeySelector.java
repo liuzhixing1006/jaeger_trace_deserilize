@@ -1,7 +1,7 @@
-package com.huya.servicechain.function.nimo;
+package com.huya.servicechain.functions.nimo;
 
 import com.huya.servicechain.domain.LogSreBean;
-import com.huya.servicechain.utils.MyConstant;
+import com.huya.servicechain.utils.Constant;
 import org.apache.flink.streaming.api.collector.selector.OutputSelector;
 
 import java.util.ArrayList;
@@ -19,8 +19,8 @@ public class NimoTafKeySelector implements OutputSelector<LogSreBean> {
         List<String> tags = new ArrayList<>();
         String key = bean.getMessageKey();
 
-        if (key.startsWith(MyConstant.NIMO_SERVICE_KEY)) {
-            tags.add(MyConstant.NIMO_SERVICE_KEY);
+        if (key.startsWith(Constant.NIMO_SERVICE_KEY)) {
+            tags.add(Constant.NIMO_SERVICE_KEY);
         }
 
         return tags;

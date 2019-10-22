@@ -1,6 +1,6 @@
-package com.huya.servicechain.function;
+package com.huya.servicechain.functions;
 
-import com.huya.servicechain.utils.MyConstant;
+import com.huya.servicechain.utils.Constant;
 import org.apache.flink.streaming.util.serialization.KeyedSerializationSchema;
 
 import java.util.Random;
@@ -23,7 +23,7 @@ public class TopologyKeySerialization implements KeyedSerializationSchema<byte[]
      */
     @Override
     public byte[] serializeKey(byte[] message) {
-        return (MyConstant.TARGET_KEY + random.nextInt(randomLimit)).getBytes();
+        return (Constant.TARGET_KEY + random.nextInt(randomLimit)).getBytes();
     }
 
     /**

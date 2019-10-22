@@ -1,4 +1,4 @@
-package com.huya.servicechain.function.webprefecture;
+package com.huya.servicechain.functions.webprefecture;
 
 import com.huya.servicechain.domain.source.WebPrefectureSourceBean;
 import org.apache.flink.api.java.functions.KeySelector;
