@@ -85,6 +85,11 @@
             <artifactId>protobuf-java</artifactId>
             <version>3.9.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
+            <version>3.6.1</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
         <!--<dependency>-->
             <!--<groupId>mysql</groupId>-->
