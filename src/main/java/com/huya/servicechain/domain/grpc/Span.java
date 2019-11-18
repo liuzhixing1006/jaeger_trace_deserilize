@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,7 +22,10 @@ public class Span implements Serializable {
     public String spanId;
     public String serviceName;
     public String operationName;
+    public long duration;
     public long startTimeMicros;
     public long modTimeMicros;
+    public List<Log> logs;
+    public Map<String, String> process;
     public Map<String, String> tags;
 }

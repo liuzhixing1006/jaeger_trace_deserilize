@@ -19,10 +19,9 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer011;
 public class Job {
     public static void main(String[] args) {
         try {
-            StreamExecutionEnvironment env = GlobalConfig.getEnv();
-            FlinkKafkaConsumer011 openTracingConsumer = GlobalConfig.getKafkaConsumer(GlobalConfig.OPENTRACING_BOOT_STRAP, GlobalConfig.OPENTRACING_TOPIC, GlobalConfig.OPENTRACING_GROUP);
+            StreamExecutionEnvironment env = GlobalConfig.getFlinkBoostrapEnv();
+            FlinkKafkaConsumer011 openTracingConsumer = GlobalConfig.buildKafkaConsumer(GlobalConfig.OPENTRACING_BOOT_STRAP, GlobalConfig.OPENTRACING_TOPIC, GlobalConfig.OPENTRACING_GROUP);
 
-            openTracingConsumer.setStartFromEarliest();
             SingleOutputStreamOperator<String> traceStream = SourceStreamParseHandler.openTracingUnserialized(env, openTracingConsumer, 32);
 
             traceStream
@@ -30,7 +29,8 @@ public class Job {
                             GlobalConfig.CK_METRIC_KAFKA_TOPIC, new TraceKeySerialization(GlobalConfig.CK_TRACE_META), GlobalConfig.getTargetKafkaProps()
                     ))
                     .setParallelism(32)
-                    .name("trace_data_to_kafka");
+                    .name("trace_data_to_kafka")
+                    .disableChaining();
 
             env.execute("huya_service_chain");
         } catch (Exception e) {

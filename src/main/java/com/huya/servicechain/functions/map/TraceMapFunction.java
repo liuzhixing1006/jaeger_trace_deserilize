@@ -7,7 +7,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 
 /**
  * @ClassName TraceMapFunction
- * @Description Trace指标转换逻辑
+ * @Description Trace指标转换逻辑，主要是用于适配Ck
  * @Author liuzhixing
  * @Date 2019-09-18 17:59
  **/

@@ -18,7 +18,7 @@ public class KafkaSourceParseSchema implements KeyedDeserializationSchema<Span> 
         try {
             return ProtoBufDeserialize.protoBufDeserialize.deserialize(message);
         } catch (Exception e) {
-            log.error("--------MyKafkaSourceSchema deserialize解析异常", e);
+            log.error("OpenTracing数据源Protobuf反解析器异常！", e);
             return null;
         }
     }

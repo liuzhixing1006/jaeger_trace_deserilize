@@ -1,6 +1,5 @@
 package com.huya.servicechain.utils;
 
-import com.huya.beelogsvr.model.LogSvrRecord;
 import com.huya.servicechain.functions.deserialize.KafkaSourceParseSchema;
 import org.apache.flink.api.common.ExecutionMode;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
@@ -23,7 +22,7 @@ import java.util.Properties;
  */
 public interface GlobalConfig {
     int AUTO_WATERMARK_INTERVAL = 6000;
-    boolean IS_LOCAL = false;
+    boolean LOCAL_MODE_FLAG = false;
 
     /**
      * openTracing数据源kafka
@@ -51,20 +50,19 @@ public interface GlobalConfig {
      * @param group     kafka的消费组
      * @return Flink的Kafka消费Client
      */
-    static FlinkKafkaConsumer011 getKafkaConsumer(String bootstrap, String topic, String group) {
-        Properties props = getBaseKafkaProperties(bootstrap, topic, group);
+    static FlinkKafkaConsumer011 buildKafkaConsumer(String bootstrap, String topic, String group) {
+        Properties props = getSourceKafkaProps(bootstrap, group);
         return new FlinkKafkaConsumer011(topic, new KafkaSourceParseSchema(), props);
     }
 
     /**
-     * 返回数据源Kafka的properties的参数配置
+     * 返回数source-kafka的properties参数
      *
      * @param bootstrap schema
-     * @param topic     topic
      * @param group     消费组
      * @return 返回目标properties
      */
-    static Properties getBaseKafkaProperties(String bootstrap, String topic, String group) {
+    static Properties getSourceKafkaProps(String bootstrap, String group) {
         Properties props = new Properties();
         props.setProperty("bootstrap.servers", bootstrap);
         props.setProperty("group.id", group);
@@ -78,7 +76,7 @@ public interface GlobalConfig {
     }
 
     /**
-     * 返回目标kafka的producer参数配置
+     * 返回target-kafka的properties参数
      *
      * @return 环境参数
      */
@@ -88,11 +86,11 @@ public interface GlobalConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
         props.put("acks", "1");
-        props.put("retries", new Integer(5));
-        props.put("linger.ms", new Integer(500));
-        props.put("batch.size", new Integer(1024 * 40));
+        props.put("retries", 5);
+        props.put("linger.ms", 500);
+        props.put("batch.size", 1024 * 40);
         props.put("compression.type", "gzip");
-        props.put("buffer.memory", new Integer(32 * 1024 * 1024));
+        props.put("buffer.memory", 32 * 1024 * 1024);
 
         return props;
     }
@@ -102,9 +100,9 @@ public interface GlobalConfig {
      *
      * @return 环境参数
      */
-    static StreamExecutionEnvironment getEnv() {
+    static StreamExecutionEnvironment getFlinkBoostrapEnv() {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        if (GlobalConfig.IS_LOCAL) {
+        if (GlobalConfig.LOCAL_MODE_FLAG) {
             env = new LocalStreamEnvironment();
         }
         env.getConfig().setRestartStrategy(RestartStrategies.fixedDelayRestart(Integer.MAX_VALUE, 5000));

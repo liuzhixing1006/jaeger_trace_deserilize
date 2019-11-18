@@ -13,7 +13,7 @@ import java.util.Random;
 public class TraceKeySerialization implements KeyedSerializationSchema<String> {
     private Random random = new Random();
 
-    int randomLimit = 1000;
+    private int randomLimit = 1000;
 
     private String meta;
 
