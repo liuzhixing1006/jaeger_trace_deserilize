@@ -25,6 +25,7 @@ public class Span implements Serializable {
     public long duration;
     public long startTimeMicros;
     public long modTimeMicros;
+    public char error;
     public List<Log> logs;
     public Map<String, String> process;
     public Map<String, String> tags;

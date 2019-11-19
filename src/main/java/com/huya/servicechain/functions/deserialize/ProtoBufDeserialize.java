@@ -53,13 +53,18 @@ public class ProtoBufDeserialize extends AbstractDeserializationSchema<Span> {
             }
         }
 
-        //2.反序列化错误日志
+        //2.反序列化错误日志，默认设置Span为正常的
+        span.setError('0');
         for (Model.Log kv : protoSpan.getLogsList()) {
             Log log = new Log(Timestamps.toMicros(kv.getTimestamp()), new HashMap<>(16));
 
             List<Model.KeyValue> fieldsList = kv.getFieldsList();
             if (fieldsList != null) {
                 for (Model.KeyValue field : fieldsList) {
+                    if ("error.kind".equals(field.getKey())) {
+                        span.setError('1');
+                    }
+
                     log.fields.put(field.getKey(), field.getVStr());
                 }
             }
