@@ -1,6 +1,5 @@
 package com.huya.servicechain.domain.grpc;
 
-import com.google.protobuf.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

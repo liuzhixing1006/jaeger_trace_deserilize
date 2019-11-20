@@ -1,6 +1,7 @@
 package com.huya.servicechain.functions.deserialize;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Parser;
 import com.google.protobuf.util.Timestamps;
 import com.huya.servicechain.domain.grpc.Log;
 import com.huya.servicechain.domain.grpc.Model;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName ProtoBufDeserialize
@@ -43,25 +45,20 @@ public class ProtoBufDeserialize extends AbstractDeserializationSchema<Span> {
         span.process = new HashMap<>(16);
 
         //1.反序列化Process
-        for (Model.KeyValue kv : protoSpan.getProcess().getTagsList()) {
-            if (!Model.ValueType.STRING.equals(kv.getVType())) {
-                continue;
-            }
-            String value = kv.getVStr();
-            if (value != null) {
-                span.process.put(kv.getKey(), value);
-            }
-        }
+        deserializeKeyValue(protoSpan.getProcess().getTagsList(), span.process);
 
-        //2.反序列化错误日志，默认设置Span为正常的
+        //2.反序列化Tags
+        deserializeKeyValue(protoSpan.getTagsList(), span.tags);
+
+        //3.反序列化错误日志，默认设置Span为正常的
         span.setError('0');
         for (Model.Log kv : protoSpan.getLogsList()) {
             Log log = new Log(Timestamps.toMicros(kv.getTimestamp()), new HashMap<>(16));
-
             List<Model.KeyValue> fieldsList = kv.getFieldsList();
+
             if (fieldsList != null) {
                 for (Model.KeyValue field : fieldsList) {
-                    if ("error.kind".equals(field.getKey())) {
+                    if (field.getKey().contains("error.kind")) {
                         span.setError('1');
                     }
 
@@ -71,18 +68,16 @@ public class ProtoBufDeserialize extends AbstractDeserializationSchema<Span> {
             span.logs.add(log);
         }
 
-        //3.反序列化tags
-        for (Model.KeyValue kv : protoSpan.getTagsList()) {
-            if (!Model.ValueType.STRING.equals(kv.getVType())) {
-                continue;
-            }
+        return span;
+    }
+
+    private void deserializeKeyValue(List<Model.KeyValue> tagsList, Map<String, String> tags) {
+        for (Model.KeyValue kv : tagsList) {
             String value = kv.getVStr();
             if (value != null) {
-                span.tags.put(kv.getKey(), value);
+                tags.put(kv.getKey(), value);
             }
         }
-
-        return span;
     }
 
     private static final String HEXES = "0123456789ABCDEF";
