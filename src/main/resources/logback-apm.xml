@@ -16,7 +16,7 @@
 			</encoder>
 		</appender>
 		
-		<logger name="com.huya.servicechain" level="error"/>
+		<logger name="com.github.liuzhixing" level="error"/>
 
 		<root level="info">
 			<appender-ref ref="CONSOLE" />
@@ -31,7 +31,7 @@
 			</encoder>
 		</appender>
 
-		<logger name="com.huya.servicechain" level="error"/>
+		<logger name="com.github.liuzhixing" level="error"/>
 
 		<root level="info">
 			<appender-ref ref="CONSOLE" />
